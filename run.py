@@ -3,6 +3,7 @@ import urllib.request
 import urllib.parse
 from collections import deque
 import difflib
+import string
 from typing import (
     List, Tuple
 )
@@ -64,9 +65,10 @@ def main():
         except:
             continue
 
-        linkre = re.compile('href="(.+?)"')
+        linkre = re.compile(r'href="(.+?)"')
         for x in linkre.findall(data):
-            if 'http' in x and x not in visited:
+            if 'http' == x[:4] and x not in visited:
+                x = urllib.parse.quote(x, safe=string.printable)
                 que.append(x)
                 print('加入队列 --->  ' + x)
 
