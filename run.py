@@ -42,11 +42,31 @@ def read_file(file_path: List[str] or Tuple[str]) -> List:
     return files
 
 
+import http.cookiejar
+
+
+# head: dict of header
+def make_my_opener(head={
+    'Connection': 'Keep-Alive',
+    'Accept': 'text/html, application/xhtml+xml, */*',
+    'Accept-Language': 'en-US,en;q=0.8,zh-Hans-CN;q=0.5,zh-Hans;q=0.3',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko'
+}):
+    cj = http.cookiejar.CookieJar()
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+    header = []
+    for key, value in head.items():
+        elem = (key, value)
+        header.append(elem)
+    opener.addheaders = header
+    return opener
+
+
 def main():
     que = deque()
     visited = set()
 
-    url = 'https://www.douban.com/'
+    url = 'https://www.baidu.com/'
     que.append(url)
     cnt = 0
 
@@ -56,11 +76,11 @@ def main():
 
         print('已经抓取: ' + str(cnt) + '个    正在抓取 <--- ' + url)
         cnt += 1
-        urlop = urllib.request.urlopen(url)
-        if 'html' not in urlop.getheader('Content-Type'):
-            continue
 
         try:
+            urlop = urllib.request.urlopen(url, timeout=2)
+            if 'html' not in urlop.getheader('Content-Type'):
+                continue
             data = urlop.read().decode('utf-8')
         except:
             continue
@@ -68,12 +88,15 @@ def main():
         linkre = re.compile(r'href="(.+?)"')
         for x in linkre.findall(data):
             if 'http' == x[:4] and x not in visited:
-                x = urllib.parse.quote(x, safe=string.printable)
+                # x = urllib.parse.quote(x, safe=string.printable)
                 que.append(x)
                 print('加入队列 --->  ' + x)
 
 
 if __name__ == '__main__':
-    main()
+    oper = make_my_opener()
+    uop = oper.open('http://www.baidu.com/', timeout=1000)
+    data = uop.read()
+    print(data.decode())
 
 # subprocess.run(['dir', '.'], shell = True, stdout =  subprocess.PIPE)
