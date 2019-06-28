@@ -16,25 +16,6 @@ import re
 # [scheme:][user-info@]host[:port][path][?query][#fragment]
 
 
-class User(object):
-    id = IntegerField('id')
-    name = StringField('username')
-
-
-class Field(object):
-    def __init__(self, name, column_type):
-        self.name = name
-        self.column_type = column_type
-
-    def __str__(self):
-        return '<%s, %s>' % (self.__class__.__name__, self.name)
-
-
-class IntegerField(Field):
-    def __init__(self, name):
-        super().__init__()
-
-
 class ListMetaclass(type):
     def __new__(mcs, name, bases, attrs):
         attrs['add'] = lambda self, value: self.append(value)
