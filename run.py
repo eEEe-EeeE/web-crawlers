@@ -2,12 +2,95 @@ import urllib
 import urllib.request
 import urllib.parse
 from collections import deque
+import http.cookiejar
 import difflib
 import string
 from typing import (
     List, Tuple
 )
 import re
+
+# [scheme:]scheme-specific-part[#fragment]
+# scheme-specific-part = [//][authority][path][?query]
+# authority = [user-info@]host[:port]
+# [scheme:][user-info@]host[:port][path][?query][#fragment]
+
+
+class User(object):
+    id = IntegerField('id')
+    name = StringField('username')
+
+
+class Field(object):
+    def __init__(self, name, column_type):
+        self.name = name
+        self.column_type = column_type
+
+    def __str__(self):
+        return '<%s, %s>' % (self.__class__.__name__, self.name)
+
+
+class IntegerField(Field):
+    def __init__(self, name):
+        super().__init__()
+
+
+class ListMetaclass(type):
+    def __new__(mcs, name, bases, attrs):
+        attrs['add'] = lambda self, value: self.append(value)
+        return type.__new__(mcs, name, bases, attrs)
+
+
+class MyList(list, metaclass=ListMetaclass):
+    pass
+
+
+class Student(object):
+    def __init__(self, name):
+        self.__name = name
+        self.__a = -2
+
+    def __str__(self):
+        return self.__class__.__name__
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.__a += 2
+        if self.__a > 100:
+            raise StopIteration()
+        return self.__a
+
+    def __getitem__(self, item):
+        if isinstance(item, int):
+            self.__a += 2
+            for x in range(item):
+                self.__a += 2
+            return self.__a
+        elif isinstance(item, slice):
+            start = item.start
+            stop = item.stop
+            if start is None:
+                start = 0
+            self.__a += 2
+            L = []
+            for x in range(stop):
+                if x >= start:
+                    L.append(self.__a)
+                self.__a += 2
+            return L
+
+    def __getattr__(self, item):
+        if item == 'age':
+            return 25
+
+    def __call__(self):
+        print('hi i\'m 4 years old')
+
+    @property
+    def name(self):
+        return self.__name
 
 
 class OpenFiles(object):
@@ -40,9 +123,6 @@ def read_file(file_path: List[str] or Tuple[str]) -> List:
         for fd in fds:
             files.append(fd.read())
     return files
-
-
-import http.cookiejar
 
 
 # head: dict of header
@@ -94,9 +174,7 @@ def main():
 
 
 if __name__ == '__main__':
-    oper = make_my_opener()
-    uop = oper.open('http://www.baidu.com/', timeout=1000)
-    data = uop.read()
-    print(data.decode())
+    std = Student('haha')
+    print(std)
 
 # subprocess.run(['dir', '.'], shell = True, stdout =  subprocess.PIPE)
