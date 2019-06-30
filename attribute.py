@@ -13,7 +13,7 @@ class IntegerField(Field):
         super(IntegerField, self).__init__(name, 'int')
 
 
-class Varchar(Field):
+class VarcharField(Field):
     def __init__(self, name):
-        super(Varchar, self).__init__(name, 'varchar')
+        super(VarcharField, self).__init__(name, 'varchar')
 

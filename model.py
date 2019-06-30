@@ -13,6 +13,7 @@ from attribute import Field
 
 
 class ModelMetaclass(type):
+
     def __new__(mcs, name, bases, attrs):
         if name == 'Model':
             return type.__new__(mcs, name, bases, attrs)
@@ -23,7 +24,7 @@ class ModelMetaclass(type):
                 print('Found mapping: %s ==> %s' % (k, v))
                 mappings[k] = v
 
-        for k, v in mappings.keys():
+        for k in mappings.keys():
             attrs.pop(k)
 
         attrs['__mappings__'] = mappings
@@ -32,8 +33,9 @@ class ModelMetaclass(type):
 
 
 class Model(dict, metaclass=ModelMetaclass):
-    def __init__(self, **kwargs):
-        super(Model, self).__init__(**kwargs)
+
+    def __init__(self, **kw):
+        super(Model, self).__init__(**kw)
 
     def __getattr__(self, key):
         try:
