@@ -14,6 +14,7 @@ from attribute import Field
 
 class ModelMetaclass(type):
 
+    # mcs表示元类本身，类似cls表示类本身
     def __new__(mcs, name, bases, attrs):
         if name == 'Model':
             return type.__new__(mcs, name, bases, attrs)
