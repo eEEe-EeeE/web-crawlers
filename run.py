@@ -154,8 +154,20 @@ def main():
                 print('加入队列 --->  ' + x)
 
 
+def create_counter():
+
+    cnt = 0
+
+    def counter():
+        nonlocal cnt
+        cnt += 1
+        return cnt
+    return counter
+
+
 if __name__ == '__main__':
-    std = Student('haha')
-    print(std)
+    f = create_counter()
+    print(f())
+    print(f())
 
 # subprocess.run(['dir', '.'], shell = True, stdout =  subprocess.PIPE)
